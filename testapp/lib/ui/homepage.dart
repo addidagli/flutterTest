@@ -18,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   bool _visible = true;
   bool _isLoading = false;
   bool _checklogin = false;
+  String _message = "";
 
   Ticket ticket;
 
@@ -59,24 +60,41 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: Container(
-                      width: 350,
-                      height: 200,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        image: DecorationImage(
-                          image: NetworkImage(
-                              'https://images.unsplash.com/photo-1528728329032-2972f65dfb3f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80'),
-                          fit: BoxFit.fill,
+                    child: Stack(
+                      children: <Widget>[
+                        Container(
+                          height: 200,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                  'https://images.unsplash.com/photo-1528728329032-2972f65dfb3f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=80'),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
                         ),
-                      ),
+                        Positioned(
+                          bottom: 10,
+                          left: 20,
+                          child: Container(
+                              child: Text(
+                            'Explore our Destinations',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 16.0),
+                          )),
+                        )
+                      ],
                     ),
                   ),
-                  Container(
-                    alignment: Alignment.bottomLeft,
-                    child: Text(
-                      "Departure Times",
-                      style: TextStyle(fontSize: 24),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        "Departure Times",
+                        style: TextStyle(fontSize: 20,fontWeight: FontWeight.w700),
+                      ),
                     ),
                   ),
                   Divider(
@@ -151,7 +169,9 @@ class _HomePageState extends State<HomePage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          SizedBox(height: 5,),
+                          SizedBox(
+                            height: 5,
+                          ),
                           Text(
                             "Welcome Back!",
                             style: TextStyle(
@@ -160,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                           Visibility(
                             visible: _checklogin,
                             child: Text(
-                              "Invalid email/password combination",
+                              _message,
                               style: TextStyle(color: Colors.red, fontSize: 16),
                             ),
                           ),
@@ -241,6 +261,7 @@ class _HomePageState extends State<HomePage> {
     if (response.statusCode == 200) {
       jsonResponse = json.decode(response.body);
       userid = jsonResponse['data']['userId'];
+      debugPrint(jsonResponse.toString());
 
       if (jsonResponse != null) {
         setState(() {
@@ -251,6 +272,8 @@ class _HomePageState extends State<HomePage> {
         });
       }
     } else {
+      jsonResponse = json.decode(response.body);
+      _message = jsonResponse['message'];
       setState(() {
         _isLoading = false;
         _checklogin = true;
